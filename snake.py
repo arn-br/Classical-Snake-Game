@@ -3,7 +3,7 @@ import random
 
 pygame.init()
 
-WIDTH, HEIGHT = 600, 600
+WIDTH, HEIGHT = 1000, 600
 GRID_SIZE = 20
 GRID_WIDTH = WIDTH // GRID_SIZE
 GRID_HEIGHT = HEIGHT // GRID_SIZE
@@ -11,9 +11,13 @@ GRID_HEIGHT = HEIGHT // GRID_SIZE
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-BLACK = (0,0,0)
-GREEN = (0, 200, 0)
-RED = (200, 0, 0)
+COLORS = [
+    ("Green", (50, 220, 50)),
+    ("Blue", (70, 130, 255)),
+    ("Orange", (255, 140, 40)),
+    ("Purple", (170, 80, 255)),
+    ("Red", (240, 60, 60)),
+]
 
 snake = [(5, 5)]
 direction = (1, 0)
@@ -27,10 +31,10 @@ def draw():
     screen.fill(BLACK)
 
     for x, y in snake:
-        pygame.draw.rect(screen, GREEN, pygame.Rect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(screen, snake_color, pygame.Rect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE))
 
     fx, fy = food
-    pygame.draw.rect(screen, RED, (fx * GRID_SIZE, fy * GRID_SIZE, GRID_SIZE, GRID_SIZE))
+    pygame.draw.rect(screen, COLORS[4][1], (fx * GRID_SIZE, fy * GRID_SIZE, GRID_SIZE, GRID_SIZE))
     pygame.display.update()
 
 def handle_keys():
@@ -73,18 +77,19 @@ def check_collision():
 def show_menu():
     font = pygame.font.SysFont(None, 48)
     small_font = pygame.font.SysFont(None, 32)
+    
     menu = True
     difficulties = [("Easy", 10), ("Medium", 15), ("Hard", 20)]
     selected = 0
     while menu:
         screen.fill(BLACK)
-        title = font.render("Classical Snake Game", True, GREEN)
-        prompt = small_font.render("Choose Difficulty", True, RED)
+        title = font.render("Classical Snake Game", True, COLORS[0][1])
+        prompt = small_font.render("Choose Difficulty", True, COLORS[4][1])
         screen.blit(title, (WIDTH // 2 - title.get_width() // 2, HEIGHT // 3))
         screen.blit(prompt, (WIDTH // 2 - prompt.get_width() // 2, HEIGHT // 2))
         
         for i, (name, _) in enumerate(difficulties):
-            color = GREEN if i ==selected else RED
+            color = COLORS[0][1] if i ==selected else COLORS[4][1]
             diff_surface = small_font.render(name, True, color)
             x = WIDTH // 2 - diff_surface.get_width() // 2 + (i - 1) * 200
             y = HEIGHT // 2 + 50
@@ -103,9 +108,41 @@ def show_menu():
                 elif event.key == pygame.K_RETURN:
                     menu = False
 
-    return difficulties[selected][1]
 
-speed = show_menu()
+    menu = True
+    color_selected = 0
+    while menu:
+        screen.fill(BLACK)
+        title = font.render("Classical Snake Game", True, COLORS[0][1])
+        prompt = small_font.render("Choose Snake Color", True, COLORS[4][1])
+        screen.blit(title, (WIDTH // 2 - title.get_width() // 2, HEIGHT // 3))
+        screen.blit(prompt, (WIDTH // 2 - prompt.get_width() // 2, HEIGHT // 2))
+
+        for i, (name, _) in enumerate(COLORS):
+            color = COLORS[0][1] if i == color_selected else COLORS[4][1]
+            diff_surface = small_font.render(name, True, color)
+            x = WIDTH // 2 - diff_surface.get_width() // 2 + (i - len(COLORS)//2) * 150
+            y = HEIGHT // 2 + 50
+            screen.blit(diff_surface, (x, y))
+
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    color_selected = (color_selected - 1) % len(COLORS)
+                elif event.key == pygame.K_RIGHT:
+                    color_selected = (color_selected + 1) % len(COLORS)
+                elif event.key == pygame.K_RETURN:
+                    menu = False
+
+        snake_color = COLORS[color_selected][1]
+
+    return difficulties[selected][1], snake_color 
+
+speed, snake_color = show_menu()
 
 running = True
 while running:
