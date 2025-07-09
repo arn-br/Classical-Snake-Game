@@ -11,12 +11,15 @@ GRID_HEIGHT = HEIGHT // GRID_SIZE
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
+BLACK = (0, 0, 0)
+
 COLORS = [
     ("Green", (50, 220, 50)),
     ("Blue", (70, 130, 255)),
     ("Orange", (255, 140, 40)),
     ("Purple", (170, 80, 255)),
     ("Red", (240, 60, 60)),
+    ("Pink", (255, 105, 180)),
 ]
 
 snake = [(5, 5)]
